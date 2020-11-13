@@ -39,6 +39,7 @@
     "npm-check-updates": "^2.14.1",
     "request": "^2.85.0",
     "require-yaml": "0.0.1",
+    "rijndael-js": "^2.0.0",
     "yalm": "^4.1.0",
     "yargs": "^11.1.0"
   },

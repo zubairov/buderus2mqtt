@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-var request = require('request');
-var MCrypt = require('mcrypt').MCrypt;
-var buffertrim = require('buffertrim');
+const request = require('request');
+const Rijndael = require('rijndael-js');
+const buffertrim = require('buffertrim');
 
 var config = require('yargs')
   .env('KM200')
@@ -38,9 +38,8 @@ var APIs = [
   '/solarCircuits',
   '/dhwCircuits'
 ];
-
-var desEcb = new MCrypt('rijndael-128', 'ecb');
-desEcb.open(key);
+console.log('Creating descEcb');
+var desEcb = new Rijndael(key, 'ecb');
 
 function getKM200 (host, api, done) {
   var options = {
@@ -54,10 +53,11 @@ function getKM200 (host, api, done) {
     if (!error && response.statusCode === 200) {
       try {
         var bodyBuffer = Buffer.from(body, 'base64');
-        var dataBuffer = buffertrim.trimEnd(desEcb.decrypt(bodyBuffer, 'base64'));
-        var result = JSON.parse(dataBuffer.toString());
-        done(dataBuffer.toString(), result);
+        const dataBuffer = buffertrim.trimEnd(Buffer.from(desEcb.decrypt(bodyBuffer, 128)));
+        const result = JSON.parse(dataBuffer.toString());
+        done(dataBuffer.toString(),result);
       } catch (e) {
+        console.log('Error!', e);
         done({ error: e });
       }
     } else {
