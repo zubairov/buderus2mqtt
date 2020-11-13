@@ -34,7 +34,7 @@
     "async": "^2.6.0",
     "buffertrim": "^1.0.0",
     "cli-table": "^0.3.1",
-    "mcrypt": "^0.1.13",
+    "cryptian": "0.0.5",
     "mqtt": "^2.17.0",
     "npm-check-updates": "^2.14.1",
     "request": "^2.85.0",
