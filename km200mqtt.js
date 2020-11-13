@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-var pkg = require('./package.json');
-var request = require('request');
-var async = require('async');
-var MCrypt = require('mcrypt').MCrypt;
-var buffertrim = require('buffertrim');
-var Mqtt = require('mqtt');
-var log = require('yalm');
-var config = require('./config.js');
+const pkg = require('./package.json');
+const request = require('request');
+const async = require('async');
+const Rijndael = require('rijndael-js');
+const buffertrim = require('buffertrim');
+const Mqtt = require('mqtt');
+const log = require('yalm');
+const config = require('./config.js');
 require('require-yaml');
 
 var mqttConnected;
@@ -26,7 +26,7 @@ var mqtt = Mqtt.connect(config.url,
 
 mqtt.on('connect', function () {
   mqttConnected = true;
-
+  log.info('Connected to mqtt');
   log.info('mqtt connected', config.url);
   mqtt.publish(config.name + '/connected', '1', { retain: true });
 
@@ -53,8 +53,8 @@ var measurements = require(config.config).measurements;
 log.debug(measurements);
 var key = Buffer.from(config.passcode, 'hex');
 log.debug(key);
-var desEcb = new MCrypt('rijndael-128', 'ecb');
-desEcb.open(key);
+var desEcb = new Rijndael(key, 'ecb');
+
 var km200host = config.km200;
 log.info(km200host);
 
@@ -129,7 +129,7 @@ mqtt.on('message', (topic, message) => {
         log.info('WRITE: ' + value);
         const postValue = desEcb.encrypt(JSON.stringify({
           value: writable.valueType === 'stringValue' ? value : parseFloat(value)
-        })).toString('base64');
+        }),128).toString('base64');
         var options = {
           url: 'http://' + km200host + url,
           body: postValue,
@@ -167,7 +167,9 @@ function getKM200(url, done) {
         km200Connected = true;
         mqtt.publish(config.name + '/connected', '2', { retain: true });
       }
-      var result = JSON.parse(buffertrim.trimEnd(desEcb.decrypt(Buffer.from(body, 'base64'), 'base64')).toString());
+      const bodyBuffer = Buffer.from(body, 'base64');
+      const dataBuffer = buffertrim.trimEnd(Buffer.from(desEcb.decrypt(bodyBuffer, 128)));
+      const result = JSON.parse(dataBuffer.toString());
       mnemonizeWritable(result);
       mnemonizeMeta(result);
       var topic = 'km200/status' + result.id;
@@ -197,6 +199,8 @@ function checkKM200() {
     function (err, result) {
       if (err) {
         console.error(err);
+      } else {
+        console.log('Completed iteration');
       }
     }
   );
