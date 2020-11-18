@@ -32,6 +32,7 @@
   "license": "MIT",
   "dependencies": {
     "async": "^3.2.0",
+    "axios": "^0.21.0",
     "buffertrim": "^1.0.0",
     "cli-table": "^0.3.1",
     "express": "^4.17.1",
@@ -41,7 +42,9 @@
     "request": "^2.85.0",
     "require-yaml": "0.0.1",
     "rijndael-js": "^2.0.0",
+    "set-interval-async": "^1.0.33",
     "yalm": "^4.1.0",
+    "yaml": "^1.10.0",
     "yargs": "^16.1.1"
   },
   "devDependencies": {
