@@ -40,7 +40,7 @@
     "require-yaml": "0.0.1",
     "rijndael-js": "^2.0.0",
     "yalm": "^4.1.0",
-    "yargs": "^11.1.0"
+    "yargs": "^16.2.0"
   },
   "devDependencies": {
     "pre-commit": "^1.2.2",
